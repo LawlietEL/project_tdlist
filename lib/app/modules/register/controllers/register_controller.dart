@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_tdlist/app/data/controller/auth_controller.dart';
 
 class RegisterController extends GetxController {
-  final AuthController _authController = AuthController();
+  final AuthController _authController = Get.find<AuthController>();
 
   TextEditingController usernameC = TextEditingController();
   TextEditingController emailC = TextEditingController();

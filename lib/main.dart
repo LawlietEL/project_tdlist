@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_tdlist/app/data/controller/auth_controller.dart';
+import 'package:project_tdlist/app/data/controller/page_index_controller.dart';
 import 'package:project_tdlist/app/routes/app_pages.dart';
 
 void main() async {
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authC = Get.put(AuthController(), permanent: true);
+    Get.put(PageIndexController(), permanent: true);
     return FutureBuilder(
       future: authC.firstInitialized(),
       builder: (context, snapshot) {
@@ -26,12 +28,15 @@ class MyApp extends StatelessWidget {
             ),
           );
         }
-        return GetMaterialApp(
-          title: "To Do List",
-          debugShowCheckedModeBanner: false,
-          initialRoute: authC.currentToken == null ? Routes.LOGIN : Routes.HOME,
-          getPages: AppPages.routes,
-        );
+        return Obx(() {
+          return GetMaterialApp(
+            title: "To Do List",
+            debugShowCheckedModeBanner: false,
+            initialRoute:
+                authC.currentToken.value.isEmpty ? Routes.LOGIN : Routes.HOME,
+            getPages: AppPages.routes,
+          );
+        });
       },
     );
   }

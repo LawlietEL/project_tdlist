@@ -19,7 +19,7 @@ class LoginView extends GetView<LoginController> {
             Column(
               children: [
                 Image.asset(
-                  'assets/images/todo.png',
+                  'assets/images/todo.png', // Path sesuai dengan pubspec.yaml
                   height: 100,
                   fit: BoxFit.contain,
                 ),

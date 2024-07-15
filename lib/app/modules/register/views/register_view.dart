@@ -19,7 +19,7 @@ class RegisterView extends GetView<RegisterController> {
             Column(
               children: [
                 Image.asset(
-                  'assets/images/todo_logo.png',
+                  'assets/images/todo.png',
                   height: 100,
                   fit: BoxFit.contain,
                 ),

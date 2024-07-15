@@ -9,8 +9,11 @@ class AuthController extends GetxController {
   final storage = const FlutterSecureStorage();
   RxBool isLoading = false.obs;
   RxBool obsecureText = true.obs;
-  String? currentToken;
-  String? currentEmail;
+  RxString currentToken = ''.obs;
+  RxString currentEmail = ''.obs;
+  RxString currentName = ''.obs;
+  RxList<String> categories = <String>[].obs;
+  RxList<String> tasks = <String>[].obs;
 
   TextEditingController emailC = TextEditingController();
   TextEditingController passwordC = TextEditingController();
@@ -19,30 +22,30 @@ class AuthController extends GetxController {
   TextEditingController usernameC = TextEditingController();
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
-    await firstInitialized();
+    firstInitialized();
   }
 
   Future<void> firstInitialized() async {
-    currentToken = await storage.read(key: 'access_token');
-    currentEmail = await storage.read(key: 'email');
+    currentToken.value = await storage.read(key: 'access_token') ?? '';
+    currentEmail.value = await storage.read(key: 'email') ?? '';
+    currentName.value = await storage.read(key: 'name') ?? '';
   }
 
   Future<void> login() async {
     try {
       isLoading.value = true;
-      var res = await ApiClient().login(
-        emailC.text,
-        passwordC.text,
-      );
+      var res = await ApiClient().login(emailC.text, passwordC.text);
       isLoading.value = false;
       if (res.data['success'] == true) {
         await storage.write(
             key: 'access_token', value: res.data['access_token']);
         await storage.write(key: 'email', value: res.data['email']);
-        currentToken = await storage.read(key: 'access_token');
-        currentEmail = await storage.read(key: 'email');
+        await storage.write(key: 'name', value: res.data['name']);
+        currentToken.value = await storage.read(key: 'access_token') ?? '';
+        currentEmail.value = await storage.read(key: 'email') ?? '';
+        currentName.value = await storage.read(key: 'name') ?? '';
         Get.offAllNamed(Routes.HOME);
         Get.rawSnackbar(
           messageText: Text(res.data['message']),
@@ -77,11 +80,13 @@ class AuthController extends GetxController {
         await storage.write(
             key: 'access_token', value: res.data['access_token']);
         await storage.write(key: 'email', value: res.data['email']);
-        currentToken = await storage.read(key: 'access_token');
-        currentEmail = await storage.read(key: 'email');
+        await storage.write(key: 'name', value: username);
+        currentToken.value = await storage.read(key: 'access_token') ?? '';
+        currentEmail.value = await storage.read(key: 'email') ?? '';
+        currentName.value = await storage.read(key: 'name') ?? '';
         Get.offAllNamed(Routes.HOME);
         Get.rawSnackbar(
-          messageText: const Text('Account created successfully'),
+          messageText: Text(res.data['message']),
           backgroundColor: Colors.green.shade300,
         );
       } else {
@@ -97,29 +102,18 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    try {
-      isLoading.value = true;
-      var res = await ApiClient().logout(accesstoken: currentToken!);
-      isLoading.value = false;
-      if (res.data['success'] == true) {
-        await storage.delete(key: 'access_token');
-        await storage.delete(key: 'email');
-        currentToken = null;
-        currentEmail = null;
-        Get.offAllNamed(Routes.LOGIN);
-        Get.rawSnackbar(
-          messageText: Text(res.data['message']),
-          backgroundColor: Colors.green.shade300,
-        );
-      } else {
-        Get.rawSnackbar(
-          messageText: Text(res.data['message'].toString()),
-          backgroundColor: Colors.red.shade300,
-        );
-      }
-    } catch (error) {
-      isLoading.value = false;
-      Get.rawSnackbar(message: error.toString());
-    }
+    await storage.deleteAll();
+    currentToken.value = '';
+    currentEmail.value = '';
+    currentName.value = '';
+    Get.offAllNamed(Routes.LOGIN);
+  }
+
+  void addCategory(String category) {
+    categories.add(category);
+  }
+
+  void addTask(String task) {
+    tasks.add(task);
   }
 }
