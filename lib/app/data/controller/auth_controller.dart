@@ -8,6 +8,9 @@ import '../../routes/app_pages.dart';
 class AuthController extends GetxController {
   final storage = const FlutterSecureStorage();
   RxBool isLoading = false.obs;
+  RxBool oldPassObs = false.obs;
+  RxBool newPassObs = false.obs;
+  RxBool confirmNewPassObs = false.obs;
   RxBool obsecureText = true.obs;
   RxString currentToken = ''.obs;
   RxString currentEmail = ''.obs;
@@ -17,9 +20,12 @@ class AuthController extends GetxController {
 
   TextEditingController emailC = TextEditingController();
   TextEditingController passwordC = TextEditingController();
+  TextEditingController currentPasswordC = TextEditingController();
+  TextEditingController newPasswordC = TextEditingController();
+  TextEditingController confirmNewPasswordC = TextEditingController();
 
   // Controllers for register view
-  TextEditingController usernameC = TextEditingController();
+  TextEditingController nameC = TextEditingController();
 
   @override
   void onInit() {
@@ -33,20 +39,28 @@ class AuthController extends GetxController {
     currentName.value = await storage.read(key: 'name') ?? '';
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
       isLoading.value = true;
-      var res = await ApiClient().login(email, password);
+      var res = await ApiClient().register(
+        name: name,
+        email: email,
+        password: password,
+      );
       isLoading.value = false;
       if (res.data['success'] == true) {
         await storage.write(
             key: 'access_token', value: res.data['access_token']);
         await storage.write(key: 'email', value: res.data['email']);
-        await storage.write(key: 'name', value: res.data['name']);
+        await storage.write(key: 'name', value: name);
         currentToken.value = await storage.read(key: 'access_token') ?? '';
         currentEmail.value = await storage.read(key: 'email') ?? '';
         currentName.value = await storage.read(key: 'name') ?? '';
-        Get.offAllNamed(Routes.HOME);
+        Get.offAllNamed(Routes.LOGIN);
         Get.rawSnackbar(
           messageText: Text(res.data['message']),
           backgroundColor: Colors.green.shade300,
@@ -63,28 +77,20 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> register({
-    required String username,
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       isLoading.value = true;
-      var res = await ApiClient().register(
-        username: username,
-        email: email,
-        password: password,
-      );
+      var res = await ApiClient().login(email, password);
       isLoading.value = false;
       if (res.data['success'] == true) {
         await storage.write(
             key: 'access_token', value: res.data['access_token']);
         await storage.write(key: 'email', value: res.data['email']);
-        await storage.write(key: 'name', value: username);
+        await storage.write(key: 'name', value: res.data['name']);
         currentToken.value = await storage.read(key: 'access_token') ?? '';
         currentEmail.value = await storage.read(key: 'email') ?? '';
         currentName.value = await storage.read(key: 'name') ?? '';
-        Get.offAllNamed(Routes.LOGIN);
+        Get.offAllNamed(Routes.HOME);
         Get.rawSnackbar(
           messageText: Text(res.data['message']),
           backgroundColor: Colors.green.shade300,
@@ -115,5 +121,42 @@ class AuthController extends GetxController {
 
   void addTask(String task) {
     tasks.add(task);
+  }
+
+  Future<void> changePassword(
+      {required String currentPassword,
+      required String newPassword,
+      required String confirmNewPassword}) async {
+    try {
+      isLoading.value = true;
+
+      // Validate if newPassword matches confirmNewPassword
+      if (newPassword != confirmNewPassword) {
+        throw 'New password and confirmation do not match';
+      }
+
+      var res = await ApiClient().changePassword(
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+          confirmNewPassword: confirmNewPassword,
+          accessToken: currentToken.value);
+
+      isLoading.value = false;
+
+      if (res.data['success'] == true) {
+        Get.rawSnackbar(
+          messageText: Text(res.data['message']),
+          backgroundColor: Colors.green.shade300,
+        );
+      } else {
+        Get.rawSnackbar(
+          messageText: Text(res.data['message'].toString()),
+          backgroundColor: Colors.red.shade300,
+        );
+      }
+    } catch (error) {
+      isLoading.value = false;
+      Get.rawSnackbar(message: error.toString());
+    }
   }
 }

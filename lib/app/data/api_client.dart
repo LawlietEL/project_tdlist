@@ -14,13 +14,13 @@ class ApiClient {
         }),
       );
       return response;
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       return e.response!;
     }
   }
 
   Future<Response> register({
-    required String username,
+    required String name,
     required String email,
     required String password,
   }) async {
@@ -28,7 +28,7 @@ class ApiClient {
       var response = await dio.post(
         '$baseUrl/register',
         data: {
-          'username': username,
+          'name': name,
           'email': email,
           'password': password,
         },
@@ -37,24 +37,49 @@ class ApiClient {
         }),
       );
       return response;
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       return e.response!;
     }
   }
 
-  Future<Response> logout({required String accesstoken}) async {
+  Future<Response> logout({required String accessToken}) async {
     try {
       var response = await dio.post(
         '$baseUrl/logout',
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
           headers: {
-            'Authorization': 'Bearer $accesstoken',
+            'Authorization': 'Bearer $accessToken',
           },
         ),
       );
       return response;
-    } on DioException catch (e) {
+    } on DioError catch (e) {
+      return e.response!;
+    }
+  }
+
+  Future<Response> changePassword(
+      {required String currentPassword,
+      required String newPassword,
+      required String confirmNewPassword,
+      required String accessToken}) async {
+    try {
+      var response = await dio.put(
+        '$baseUrl/change-password',
+        data: {
+          'current_password': currentPassword,
+          'new_password': newPassword,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+      return response;
+    } on DioError catch (e) {
       return e.response!;
     }
   }

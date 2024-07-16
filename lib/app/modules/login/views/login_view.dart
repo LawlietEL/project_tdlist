@@ -119,7 +119,9 @@ class LoginView extends GetView<LoginController> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (controller.authC.isLoading.isFalse) {
-                          await controller.login();
+                          await controller.authC.login(
+                              email: controller.authC.emailC.text,
+                              password: controller.authC.passwordC.text);
                         }
                       },
                       style: ElevatedButton.styleFrom(

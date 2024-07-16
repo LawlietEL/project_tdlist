@@ -13,8 +13,7 @@ class HomeView extends StatelessWidget {
     final PageIndexController pageController = Get.find<PageIndexController>();
 
     return Scaffold(
-      backgroundColor:
-          const Color(0xFFB0E3CE), // Mengubah warna latar belakang halaman
+      backgroundColor: const Color(0xFFB0E3CE),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -28,7 +27,7 @@ class HomeView extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.only(left: 20),
                 child: const CircleAvatar(
-                  backgroundImage: AssetImage('assets/pp.png'),
+                  backgroundImage: AssetImage('assets/images/pp.png'),
                 ),
               ),
             ),
@@ -45,7 +44,7 @@ class HomeView extends StatelessWidget {
                         style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12),
+                            fontSize: 14),
                       )),
                   const SizedBox(height: 1),
                   Obx(() => Text(
@@ -58,31 +57,56 @@ class HomeView extends StatelessWidget {
             ),
           ],
         ),
-
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.grey),
-            onPressed: () {
-              logout(context);
-            },
+          Container(
+            margin: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              icon: const Icon(Icons.settings,
+                  color: Color.fromARGB(255, 48, 48, 48)),
+              onPressed: () {
+                // Tampilkan dialog atau navigasi ke halaman pengaturan
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Settings'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.lock,
+                                color: Color.fromARGB(255, 48, 48, 48)),
+                            title: const Text('Change Password'),
+                            onTap: () {
+                              Get.toNamed('/change-password');
+                            },
+                          ),
+                          const Divider(),
+                          ListTile(
+                            leading: const Icon(Icons.logout,
+                                color: Color.fromARGB(255, 48, 48, 48)),
+                            title: const Text('Sign Out'),
+                            onTap: () {
+                              logout(context);
+                            },
+                          ),
+                        ],
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
           ),
-          const Text('Sign Out', style: TextStyle(color: Colors.grey)),
-          const SizedBox(width: 16),
         ],
-
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.search, color: Colors.black),
-        //     onPressed: () {
-        //       showSearch(
-        //         context: context,
-        //         delegate: TaskSearch(tasks: authController.tasks),
-        //       );
-        //     },
-        //   ),
-        //   const SizedBox(
-        //       width: 16), // Menambahkan spasi di sebelah kanan tombol pencarian
-        // ],
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(5.0),
           child: Divider(
@@ -135,11 +159,11 @@ class HomeView extends StatelessWidget {
                   return AlertDialog(
                     title: const Text('Add Category'),
                     content: TextField(
-                      decoration:
-                          const InputDecoration(hintText: "Add Category"),
+                      decoration: const InputDecoration(
+                        hintText: "Add Category",
+                      ),
                       onSubmitted: (value) {
-                        authController
-                            .addCategory(value); // Assuming this method exists
+                        authController.addCategory(value);
                         Navigator.of(context).pop();
                       },
                     ),
@@ -206,64 +230,3 @@ Future<void> logout(BuildContext context) async {
     },
   );
 }
-
-
-
-// class TaskSearch extends SearchDelegate<String> {
-//   final List<String> tasks;
-
-//   TaskSearch({required this.tasks});
-
-//   @override
-//   List<Widget> buildActions(BuildContext context) {
-//     return [
-//       IconButton(
-//         icon: const Icon(Icons.clear),
-//         onPressed: () {
-//           query = '';
-//         },
-//       ),
-//     ];
-//   }
-
-//   @override
-//   Widget buildLeading(BuildContext context) {
-//     return IconButton(
-//       icon: const Icon(Icons.arrow_back),
-//       onPressed: () {
-//         close(context, '');
-//       },
-//     );
-//   }
-
-//   @override
-//   Widget buildResults(BuildContext context) {
-//     final results = tasks.where((task) => task.contains(query)).toList();
-//     return ListView(
-//       children: results
-//           .map<ListTile>((task) => ListTile(
-//                 title: Text(task),
-//                 onTap: () {
-//                   close(context, task);
-//                 },
-//               ))
-//           .toList(),
-//     );
-//   }
-
-//   @override
-//   Widget buildSuggestions(BuildContext context) {
-//     final suggestions = tasks.where((task) => task.contains(query)).toList();
-//     return ListView(
-//       children: suggestions
-//           .map<ListTile>((task) => ListTile(
-//                 title: Text(task),
-//                 onTap: () {
-//                   query = task;
-//                   showResults(context);
-//                 },
-//               ))
-//           .toList(),
-//     );
-//   }
-// }
