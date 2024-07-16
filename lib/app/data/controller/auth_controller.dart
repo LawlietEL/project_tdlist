@@ -33,10 +33,10 @@ class AuthController extends GetxController {
     currentName.value = await storage.read(key: 'name') ?? '';
   }
 
-  Future<void> login() async {
+  Future<void> login(String email, String password) async {
     try {
       isLoading.value = true;
-      var res = await ApiClient().login(emailC.text, passwordC.text);
+      var res = await ApiClient().login(email, password);
       isLoading.value = false;
       if (res.data['success'] == true) {
         await storage.write(
@@ -84,7 +84,7 @@ class AuthController extends GetxController {
         currentToken.value = await storage.read(key: 'access_token') ?? '';
         currentEmail.value = await storage.read(key: 'email') ?? '';
         currentName.value = await storage.read(key: 'name') ?? '';
-        Get.offAllNamed(Routes.HOME);
+        Get.offAllNamed(Routes.LOGIN);
         Get.rawSnackbar(
           messageText: Text(res.data['message']),
           backgroundColor: Colors.green.shade300,

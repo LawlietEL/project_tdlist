@@ -12,11 +12,12 @@ class RegisterView extends GetView<RegisterController> {
     return Scaffold(
       backgroundColor: AppColor.primary,
       body: Center(
-        child: ListView(
-          shrinkWrap: true,
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          children: [
-            Column(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/todo.png',
@@ -27,8 +28,10 @@ class RegisterView extends GetView<RegisterController> {
                 TextField(
                   controller: controller.usernameC,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.person),
+                    prefixIcon:
+                        const Icon(Icons.person, color: AppColor.secondarySoft),
                     labelText: 'Username',
+                    labelStyle: const TextStyle(color: AppColor.secondarySoft),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -49,8 +52,10 @@ class RegisterView extends GetView<RegisterController> {
                 TextField(
                   controller: controller.emailC,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.email),
+                    prefixIcon:
+                        const Icon(Icons.email, color: AppColor.secondarySoft),
                     labelText: 'Email',
+                    labelStyle: const TextStyle(color: AppColor.secondarySoft),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -71,10 +76,13 @@ class RegisterView extends GetView<RegisterController> {
                 Obx(
                   () => TextField(
                     controller: controller.passwordC,
-                    obscureText: controller.obsecureText.value,
+                    obscureText: !controller.obsecureText.value,
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock),
+                      prefixIcon:
+                          const Icon(Icons.lock, color: AppColor.secondarySoft),
                       labelText: 'Password',
+                      labelStyle:
+                          const TextStyle(color: AppColor.secondarySoft),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -95,10 +103,10 @@ class RegisterView extends GetView<RegisterController> {
                           controller.obsecureText.isTrue
                               ? Icons.visibility
                               : Icons.visibility_off,
+                          color: AppColor.secondarySoft,
                         ),
                         onPressed: () {
-                          controller.obsecureText.value =
-                              !controller.obsecureText.value;
+                          controller.obsecureText.toggle();
                         },
                       ),
                     ),
@@ -120,7 +128,8 @@ class RegisterView extends GetView<RegisterController> {
                               colorText: Colors.white,
                               snackPosition: SnackPosition.TOP,
                             );
-                            Get.toNamed(Routes.HOME);
+                            Get.offAllNamed(Routes
+                                .LOGIN); // Mengganti navigasi dengan offAllNamed agar tidak ada kembali ke halaman register
                           }
                         }
                       },
@@ -151,7 +160,7 @@ class RegisterView extends GetView<RegisterController> {
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

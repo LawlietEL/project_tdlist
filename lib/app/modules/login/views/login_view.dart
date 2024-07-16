@@ -119,9 +119,7 @@ class LoginView extends GetView<LoginController> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (controller.authC.isLoading.isFalse) {
-                          await controller.authC.login();
-                          Get.toNamed(Routes
-                              .HOME); // Ensure it navigates to home after login
+                          await controller.login();
                         }
                       },
                       style: ElevatedButton.styleFrom(
