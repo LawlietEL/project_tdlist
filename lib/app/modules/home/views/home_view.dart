@@ -134,7 +134,7 @@ class HomeView extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.schedule, color: Colors.black),
+            leading: const Icon(Icons.list_alt_outlined, color: Colors.black),
             title: const Text('All Tasks'),
             onTap: () {
               Get.toNamed('/all-tasks');

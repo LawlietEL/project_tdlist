@@ -1,23 +1,11 @@
 import 'package:get/get.dart';
 
 class AllTasksController extends GetxController {
-  //TODO: Implement AllTasksController
+  // Reactive variable to track the current page index
+  var pageIndex = 0.obs;
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  // Method to change the page
+  void changePage(int index) {
+    pageIndex.value = index;
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }
